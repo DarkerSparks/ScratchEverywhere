@@ -82,6 +82,7 @@ ScriptThread *BlockExecutor::startThread(Sprite *sprite, Block *block, bool shou
 
     newThread->blockHat = block;
     newThread->nextBlock = block;
+    newThread->parentThread = nullptr;
     newThread->finished = false;
     newThread->id = ++id;
     newThread->sprite = sprite;
@@ -127,6 +128,8 @@ void BlockExecutor::runThreads() {
                                        thread->finished = true;
                                    }
                                }
+                               SpeechManager *speechManager = Render::getSpeechManager();
+                               if (speechManager) speechManager->clearSpeech(s);
                                sortSprites = true;
                                delete s;
                                return true;
@@ -157,6 +160,7 @@ BlockResult BlockExecutor::runThread(ScriptThread &thread, Sprite &sprite, Value
         thread.nextBlock = currentBlock->nextBlock;
 
         var = currentBlock->blockFunction(currentBlock, &thread, &sprite, outValue);
+        currentBlock->recalculateInputs = false;
         if (var == BlockResult::REPEAT) thread.nextBlock = currentBlock;
         else {
             Scratch::resetInput(currentBlock);
@@ -328,7 +332,7 @@ void BlockExecutor::updateMonitors(ScriptThread *thread) {
                 for (const auto &[paramName, paramValue] : var.parameters) {
                     ParsedField parsedField;
                     parsedField.value = Math::removeQuotations(paramValue);
-                    (newBlock.fields)[paramName] = parsedField;
+                    newBlock.fields.push_back({paramName, parsedField});
                 }
                 if (var.opcode == "looks_costumenumbername")
                     var.displayName = var.spriteName + ": costume " + Scratch::getFieldValue(newBlock, "NUMBER_NAME");
