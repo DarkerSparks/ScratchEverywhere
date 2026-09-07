@@ -150,7 +150,7 @@ void Input::getInput() {
             // mousePointer.isPressed = true;
             mousePointer.isMoving = true;
             coords.first *= BOTTOM_SCR_CONVERSION;
-            coords.first += (MAX.first - MIN.first) / 2;
+            coords.first -= (MAX.first + MIN.first) / 2;
             set_mouse_pointer_values(coords);
         } break;
         // normal touch screen if both screens or bottom screen only
