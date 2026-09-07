@@ -101,7 +101,7 @@ void Image_GLCore::render(ImageRenderParams &params) {
                      drawX, y,
                      (float)renderWidth * scaleX,
                      (float)renderHeight * scaleY,
-                     -rotation,
+                     rotation,
                      pivotX, pivotY);
 
     float proj[16];
